@@ -125,11 +125,10 @@ void loop() {
     delay(200);
   } else {
     Serial.println("Enter entrance code on phone: ");
-    tooth.print("Enter your password:");
+    tooth.print("Type something");
     if (tooth.available() > 0) {  //if something is inputed on device
       input = tooth.read();
-      tooth.print("Password: " + input);
-      if (input == 111) {
+      Serial.println("Device Verified");
         Serial.println("Password correct! Swipe RFID");
         digitalWrite(GREEN_LED, HIGH);
         delay(1000);
