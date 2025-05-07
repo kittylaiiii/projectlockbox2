@@ -88,6 +88,10 @@ void loop() {
   // delay(8900);
 
 
+
+
+
+
   //ultrasonic sensor stuff
 
   digitalWrite(TRIGGER_PIN, LOW);
@@ -102,10 +106,9 @@ void loop() {
   float speed = 0.034;  //measured in cm/microseconds
   float distance = (speed * duration) / 2;
 
-  // Serial.println("distance:");
-  // Serial.println(distance);
+
   delay(100);
-  //end of ultrasonic sensor stuff
+
 
 
 
@@ -120,17 +123,13 @@ void loop() {
     }
   }
 
-  //   } else {
-  //     Serial.println("Wrong RFID. Access not granted.");
-  //   }
-  // }
 
   if (distance <= 10) {
     Serial.println("Step back! You're too close!");
     digitalWrite(BUZZER, HIGH);
-    delay(200);
+    delay(100);
     digitalWrite(BUZZER, LOW);
-    delay(200);
+    delay(100);
   } else {
     Serial.println("Enter entrance code on phone: ");
     tooth.print("Type something");
@@ -141,75 +140,88 @@ void loop() {
       digitalWrite(GREEN_LED, HIGH);
       delay(1000);
       digitalWrite(GREEN_LED, LOW);
-      byte authorizedUID[] = { 0x96, 0xDE, 0x29, 0x03 };  // Example UID (change to your real UID)
-      byte uidLength = 4;                                 // Length of the UID
-      if (mfrc522.uid.size == uidLength) {
-        boolean authorized = true;
-        for (byte i = 0; i < uidLength; i++) {
-          if (mfrc522.uid.uidByte[i] != authorizedUID[i]) {
-            authorized = false;
-            break;
-          }
-        }
-
-        if (authorized) {
-          Serial.println("Access granted.");
-          delay(1000);
-          spin.write(120);
-          delay(8900);
-          // spin.write(90);
-          // delay(1000);
-        }
-      }
-
-
-      // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
-
-      if (!mfrc522.PICC_IsNewCardPresent()) {
-
-        return;
-      }
-
-
-      // Select one of the cards
-
-      if (!mfrc522.PICC_ReadCardSerial()) {
-
-        return;
-      }
-
-
-
-
-      MFRC522::PICC_Type piccType = mfrc522.PICC_GetType(mfrc522.uid.sak);
-
-
-
-      Serial.print(F("RFID Tag UID:"));
-
-      printHex(mfrc522.uid.uidByte, mfrc522.uid.size);
-
-      Serial.println("");
-
-
-
-      mfrc522.PICC_HaltA();  // Halt PICC
+      Serial.println("Access granted.");
+      delay(1000);
+      spin.write(120);
+      delay(8900);
     }
-  
-  
-
-    void printHex(byte * buffer, byte bufferSize) {
+  }
 
 
 
-      //Serial.begin("reading?");
 
-      for (byte i = 0; i < bufferSize; i++) {
 
-        Serial.print(buffer[i] < 0x10 ? " 0" : " ");
 
-        Serial.print(buffer[i], HEX);
+  // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
+
+  if (!mfrc522.PICC_IsNewCardPresent()) {
+
+    return;
+  }
+
+
+  // Select one of the cards
+
+  if (!mfrc522.PICC_ReadCardSerial()) {
+
+    return;
+  }
+
+
+
+
+  MFRC522::PICC_Type piccType = mfrc522.PICC_GetType(mfrc522.uid.sak);
+
+
+
+  Serial.print(F("RFID Tag UID:"));
+
+  printHex(mfrc522.uid.uidByte, mfrc522.uid.size);
+
+  Serial.println("");
+
+
+
+  mfrc522.PICC_HaltA();  // Halt PICC
+
+  byte authorizedUID[] = { 0x96, 0xDE, 0x29, 0x03 };  // Example UID (change to your real UID)
+  byte uidLength = 4;                                 // Length of the UID
+  if (mfrc522.uid.size == uidLength) {
+    boolean authorized = true;
+    for (byte i = 0; i < uidLength; i++) {
+      if (mfrc522.uid.uidByte[i] != authorizedUID[i]) {
+        authorized = false;
+        break;
       }
     }
+
+    if (authorized) {
+      Serial.println("Access granted.");
+      Serial.println("hi");
+      spin.write(60);  //close
+      delay(8900);
+
+
+    } else {
+      Serial.println("Wrong RFID. Access not granted.");
+      digitalWrite(BUZZER, HIGH);
+      delay(100);
+      digitalWrite(BUZZER, LOW);
+      delay(100);
+    }
+  }
+}
+
+void printHex(byte* buffer, byte bufferSize) {
+
+
+
+  //Serial.begin("reading?");
+
+  for (byte i = 0; i < bufferSize; i++) {
+
+    Serial.print(buffer[i] < 0x10 ? " 0" : " ");
+
+    Serial.print(buffer[i], HEX);
   }
 }
