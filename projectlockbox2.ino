@@ -45,7 +45,7 @@ void setup() {
   pinMode(TRIGGER_PIN, OUTPUT);  //output because it sends pulse out
   pinMode(ECHO_PIN, INPUT);      //input because it is reading what is coming in
 
-  spin.attach(2);
+  spin.attach(2); //attach the spin object to pin 2
 }
 
 
